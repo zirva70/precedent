@@ -25,6 +25,29 @@ function stem(token) {
   return stemmed;
 }
 
+/**
+ * "we ship weekly" -> "We ship weekly". A first word that already mixes cases, such
+ * as "iOS" or "macOS", is a name and is left alone.
+ */
+export function capitalizeFirst(text) {
+  const value = String(text ?? '');
+  const firstWord = value.match(/^\S+/u)?.[0] ?? '';
+  if (!/^\p{Ll}/u.test(firstWord) || /\p{Lu}/u.test(firstWord.slice(1))) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+/** True when two texts say the same words, ignoring case, spacing and end punctuation. */
+export function sameWording(a, b) {
+  const plain = (text) =>
+    String(text ?? '')
+      .normalize('NFKC')
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .replace(/[\s.!?…]+$/u, '')
+      .trim();
+  return plain(a) !== '' && plain(a) === plain(b);
+}
+
 export function tokenize(text) {
   const words = String(text ?? '').normalize('NFKC').toLowerCase().match(/[\p{L}\p{N}]+/gu);
   if (!words) return [];

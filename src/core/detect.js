@@ -2,6 +2,8 @@
 // model. It only proposes: a person confirms before anything becomes guidance, so
 // the rules favour not missing a decision over never being wrong.
 
+import { capitalizeFirst } from './text.js';
+
 const TITLE_LENGTH = 90;
 
 // "Decision: ..." / "Решение: ..." at the start of a line.
@@ -68,7 +70,8 @@ function splitReason(sentence) {
 }
 
 function result(decision, rationale) {
-  const text = decision.replace(/\s+/g, ' ').trim();
+  // "Decision: we ship weekly" is a sentence, so it starts with a capital like one.
+  const text = capitalizeFirst(decision.replace(/\s+/g, ' ').trim());
   if (text.length < 8) return null;
   // The panel prints "Why: <rationale>", so a leading "because" would read twice.
   const reason = rationale
@@ -76,7 +79,7 @@ function result(decision, rationale) {
     .trim()
     .replace(/^(?:because(?! of\b)|since|потому что|так как|поскольку)\s+/iu, '');
   return {
-    title: titleFrom(text),
+    title: capitalizeFirst(titleFrom(text)),
     decision: text,
     rationale: reason ? reason.charAt(0).toUpperCase() + reason.slice(1) : '',
   };

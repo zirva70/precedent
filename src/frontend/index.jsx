@@ -19,6 +19,7 @@ import ForgeReconciler, {
   xcss,
 } from '@forge/react';
 import { invoke } from '@forge/bridge';
+import { sameWording } from '../core/text.js';
 
 const STATUS_LOZENGE = {
   active: { appearance: 'success', label: 'In force' },
@@ -95,7 +96,8 @@ const DecisionCard = ({ item, graph, footer, showIssue = false }) => {
         <Heading as="h4" size="small">
           {item.title}
         </Heading>
-        <Text>{item.decision}</Text>
+        {/* A short decision from a comment is its own title; saying it twice is noise. */}
+        {sameWording(item.title, item.decision) ? null : <Text>{item.decision}</Text>}
         <Text color="color.text.subtle">Why: {item.rationale}</Text>
         {item.supersededBy ? <Text>Replaced by {item.supersededBy}.</Text> : null}
         {item.supersedes ? <Text>Replaces {item.supersedes}.</Text> : null}

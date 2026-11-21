@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { rankDecisions } from '../src/core/search.js';
-import { tokenize } from '../src/core/text.js';
+import { sameWording, tokenize } from '../src/core/text.js';
 
 const decision = (id, fields) => ({
   id,
@@ -79,4 +79,13 @@ test('non-Latin text is searchable', () => {
     'сколько баз нужно на склад',
   );
   assert.equal(ranked[0]?.decision.id, 'DEC-R');
+});
+
+test('the panel treats a title and decision with the same words as one line', () => {
+  assert.equal(sameWording('We ship the mobile app weekly', 'We ship the mobile app weekly.'), true);
+  assert.equal(sameWording('we ship weekly', 'We  ship weekly!'), true);
+  assert.equal(sameWording('No caching in the checkout flow', 'Prices are always read live at checkout'), false);
+  // A shortened title is not the full decision.
+  assert.equal(sameWording('Keep the long title…', 'Keep the long title and everything after it.'), false);
+  assert.equal(sameWording('', ''), false);
 });

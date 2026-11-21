@@ -15,16 +15,27 @@ test('the explicit form is read line by line', () => {
   assert.deepEqual(
     detectDecision('Thanks all.\nDecision: we keep prices uncached in checkout.\nWhy: a stale price is a legal problem.'),
     {
-      title: 'we keep prices uncached in checkout',
-      decision: 'we keep prices uncached in checkout.',
+      title: 'We keep prices uncached in checkout',
+      decision: 'We keep prices uncached in checkout.',
       rationale: 'A stale price is a legal problem.',
     },
   );
 });
 
+test('a decision from a comment starts with a capital, unless it starts with a name', () => {
+  const weekly = detectDecision(
+    'Decision: we ship the mobile app weekly, because daily releases broke review.',
+  );
+  assert.equal(weekly.title, 'We ship the mobile app weekly');
+  assert.equal(weekly.decision, 'We ship the mobile app weekly');
+  assert.equal(weekly.rationale, 'Daily releases broke review.');
+  assert.equal(detectDecision('Decision: iOS builds ship on Tuesdays.').title, 'iOS builds ship on Tuesdays');
+  assert.equal(detectDecision('Решение: релизим раз в неделю.').title, 'Релизим раз в неделю');
+});
+
 test('an explicit decision with an inline reason is split at "because"', () => {
   const found = detectDecision('Decision - use PostgreSQL for billing because we need transactions.');
-  assert.equal(found.decision, 'use PostgreSQL for billing');
+  assert.equal(found.decision, 'Use PostgreSQL for billing');
   assert.equal(found.rationale, 'We need transactions.');
 });
 
@@ -168,7 +179,7 @@ test('the comment text is fetched when the event does not carry it', async () =>
     },
   });
   assert.deepEqual(asked, [{ issueKey: 'MOBL-55', commentId: '9' }]);
-  assert.equal(proposal.decision, 'ship weekly.');
+  assert.equal(proposal.decision, 'Ship weekly.');
 });
 
 test('a proposal guides nobody until a person confirms it', async () => {

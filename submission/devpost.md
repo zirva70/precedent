@@ -137,9 +137,10 @@ Precedent is a Forge app on the Node.js 22 runtime. It uses seven module types:
 
 - The core (decision rules, ranking, storage) is plain JavaScript with Forge storage
   injected, so the whole of it runs under `node:test` without a Forge tunnel. There are
-  62 tests.
+  64 tests.
 - Decisions live in Forge key-value storage. All data stays on the customer's site.
-  The app calls no external service and no paid model.
+  The app calls no external service and no paid model, and Forge reports each deploy
+  as eligible for the Runs on Atlassian program.
 - Relevance is BM25 over title, tags, decision and rationale, with field weights and
   stemming.
 - The UI is UI Kit (`@forge/react`), so it looks native in Jira in light and dark
