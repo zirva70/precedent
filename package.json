@@ -1,0 +1,28 @@
+{
+  "name": "precedent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Precedent - decision memory for Jira teams: record what was decided and why, and surface it before work contradicts it.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test \"test/**/*.test.mjs\"",
+    "lint": "forge lint",
+    "deploy": "forge deploy",
+    "tunnel": "forge tunnel"
+  },
+  "dependencies": {
+    "@forge/api": "*",
+    "@forge/bridge": "*",
+    "@forge/kvs": "*",
+    "@forge/react": "*",
+    "@forge/resolver": "*",
+    "@forge/teamwork-graph": "^5.4.0",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@forge/cli": "*"
+  },
+  "allowScripts": {
+    "keytar@7.9.0": true
+  }
+}

@@ -1,0 +1,284 @@
+modules:
+  # The primary interface: tools any MCP-compatible agent can call.
+  rovo:mcp:
+    - key: precedent-mcp
+      name: Precedent Decisions
+      tools:
+        - check-plan-against-decisions
+        - record-decision
+        - find-decisions
+        - get-decisions-for-issue
+        - supersede-decision
+
+  rovo:agent:
+    - key: precedent-agent
+      name: Precedent
+      description: The shared decision memory for your team's AI agents and the people
+        who direct them.
+      icon: resource:assets;icon.svg
+      prompt: |
+        You are Precedent, the shared decision memory of this team.
+
+        Most of the work here is carried out by AI agents. Each agent sees only its own
+        session: it does not know what another agent, or the same agent yesterday, decided
+        and why. Code shows what was chosen, never what was ruled out. Precedent is the
+        memory that outlives a session and is shared across every agent and person.
+
+        What you do:
+        - When the user describes a plan, a proposal, or a work item about to be started,
+          call check-plan-against-decisions BEFORE giving an opinion. The tool matches
+          words, not meaning, so pass keywords: the other terms a team could have used
+          for the same topic. Then read otherActiveDecisions in the result as well, and
+          treat any that is about the same thing as relevant. Report which active
+          decisions apply and say plainly whether the plan follows, extends, or
+          contradicts each one.
+        - When the user asks what was decided about a topic, call find-decisions and answer
+          only from the returned records. Quote the decision id (for example DEC-4F7K2Q).
+        - When the user states or implies that something was decided, record it with
+          record-decision. Capture a short title, the decision itself, and the rationale.
+          Always ask for the rationale if it is missing: a decision without a reason
+          cannot be re-evaluated later.
+        - When a decision is replaced, call supersede-decision so the old record points to
+          the new one. Never delete history.
+        - When the user is viewing a Jira work item, call get-decisions-for-issue to show
+          what was decided there, including decisions recorded by agents.
+
+        Rules:
+        - Never invent a decision. If nothing relevant is recorded, say so.
+        - Decisions with status "superseded" or "reversed" are history, not guidance.
+          Mention them only as context and say what replaced them.
+        - A relevance match is not proof of a conflict. Explain your reasoning and let the
+          user judge.
+        - Keep answers short: the decision, the reason, the id, who decided it and when.
+      conversationStarters:
+        - Check my plan against past decisions
+        - What did we decide about this, and why?
+        - What have agents decided on this work item?
+      actions:
+        - check-plan-against-decisions
+        - record-decision
+        - find-decisions
+        - get-decisions-for-issue
+        - supersede-decision
+
+  # Human oversight: what was decided on this work item, by people or by agents.
+  jira:issuePanel:
+    - key: precedent-issue-panel
+      resource: panel
+      resolver:
+        function: resolver
+      render: native
+      title: Precedent
+      icon: resource:assets;icon.svg
+      description: Decisions that apply to this work item, and the reasons behind them.
+
+  # Runs on every work item view and raises a flag when an earlier decision touches
+  # it, so the warning does not depend on someone opening the panel.
+  jira:issueViewBackgroundScript:
+    - key: precedent-background
+      title: Precedent
+      resource: background
+      render: native
+      resolver:
+        function: resolver
+
+  action:
+    - key: check-plan-against-decisions
+      name: Check a plan against decisions
+      function: checkPlan
+      actionVerb: GET
+      description: |
+        Call BEFORE starting any non-trivial task. Given the work you intend to do,
+        returns the team's active decisions on that topic with their rationale, plus
+        outdated ones you must not follow.
+      inputs:
+        plan:
+          title: Plan
+          type: string
+          required: true
+          description: "What you are about to do, in plain words. Include the
+            technologies, components and approach, for example 'add a Redis
+            cache to the checkout price lookup'"
+        keywords:
+          title: Keywords
+          type: string
+          required: false
+          description: "Other words a team might use for the same topic,
+            comma-separated, for example 'caching, memoize, stale prices'.
+            Matching is by words, so synonyms find decisions the plan's own
+            wording would miss."
+
+    - key: record-decision
+      name: Record a decision
+      function: recordDecision
+      actionVerb: CREATE
+      description: |
+        Record a decision that future work must respect: an approach chosen, an
+        alternative ruled out, a constraint agreed. Other agents and people will find it
+        later. Record the decision and its reason, not a log of work done.
+      inputs:
+        title:
+          title: Title
+          type: string
+          required: true
+          description: "Short name of the decision, for example 'No caching in the
+            checkout flow'"
+        decision:
+          title: Decision
+          type: string
+          required: true
+          description: "What exactly was decided, in one or two sentences"
+        rationale:
+          title: Rationale
+          type: string
+          required: false
+          description: "Why: the constraint, the trade-off, and the alternatives that were
+            rejected. This is the part that cannot be recovered from the code."
+        tags:
+          title: Tags
+          type: string
+          required: false
+          description: "Comma-separated topics, for example 'checkout, caching'"
+        issueKey:
+          title: Jira work item key
+          type: string
+          required: false
+          description: "Key of the Jira work item this decision belongs to, for example
+            'PAY-142'. Defaults to the work item the user is viewing."
+
+    - key: find-decisions
+      name: Find decisions
+      function: findDecisions
+      actionVerb: GET
+      description: |
+        Search recorded decisions by topic. Use to answer what was decided, why something
+        is done a certain way, or whether a question is already settled.
+      inputs:
+        query:
+          title: Query
+          type: string
+          required: true
+          description: "Topic or question to search for, in plain words"
+        keywords:
+          title: Keywords
+          type: string
+          required: false
+          description: "Other words a team might use for the same topic, comma-separated. Matching is by words, so add synonyms."
+        includeHistory:
+          title: Include history
+          type: boolean
+          required: false
+          description: "Set true to also return superseded and reversed decisions.
+            Defaults to false."
+
+    - key: get-decisions-for-issue
+      name: Get decisions for a work item
+      function: getDecisionsForIssue
+      actionVerb: GET
+      description: |
+        List every decision linked to a Jira work item, including superseded ones.
+        Call this when picking up a work item someone else, or another agent, worked on.
+      inputs:
+        issueKey:
+          title: Jira work item key
+          type: string
+          required: false
+          description: "Key of the Jira work item, for example 'PAY-142'. Defaults to the
+            work item the user is viewing."
+
+    - key: supersede-decision
+      name: Supersede a decision
+      function: supersedeDecision
+      actionVerb: UPDATE
+      description: |
+        Replace a decision with a new one; the old one is kept as history. Use only when
+        the user has agreed to change it, never to get around a decision that blocks
+        your plan.
+      inputs:
+        decisionId:
+          title: Decision id
+          type: string
+          required: true
+          description: "Id of the decision being replaced, for example 'DEC-4F7K2Q'"
+        title:
+          title: New title
+          type: string
+          required: true
+          description: "Short name of the new decision"
+        decision:
+          title: New decision
+          type: string
+          required: true
+          description: "What is decided now"
+        rationale:
+          title: Rationale
+          type: string
+          required: false
+          description: "Why the earlier decision no longer holds"
+
+  # Publishes every decision into Teamwork Graph as a document, so Rovo Search, Rovo
+  # Chat and every other Rovo agent on the site can find it. All data stays on the
+  # site: no external system, no sign-in, no admin configuration beyond connecting.
+  graph:connector:
+    - key: precedent-decisions
+      name: Precedent
+      capabilities:
+        replicatesPermissions: false
+        syncFidelity: upsert
+        supportsIncrementalSync: true
+      icons:
+        light: resource:assets;icon.svg
+        dark: resource:assets;icon.svg
+      objectTypes:
+        - atlassian:document
+      datasource:
+        onConnectionChange:
+          function: onGraphConnectionChange
+
+  # A comment that states a decision becomes a proposal on its work item, for a
+  # person to confirm in the panel. Nothing is recorded without that confirmation.
+  trigger:
+    - key: precedent-comment-trigger
+      function: onIssueCommented
+      events:
+        - avi:jira:commented:issue
+
+  function:
+    - key: onIssueCommented
+      handler: index.onIssueCommented
+    - key: onGraphConnectionChange
+      handler: index.onGraphConnectionChange
+    - key: resolver
+      handler: index.handler
+    - key: recordDecision
+      handler: index.recordDecision
+    - key: findDecisions
+      handler: index.findDecisions
+    - key: getDecisionsForIssue
+      handler: index.getDecisionsForIssue
+    - key: checkPlan
+      handler: index.checkPlan
+    - key: supersedeDecision
+      handler: index.supersedeDecision
+
+resources:
+  - key: panel
+    path: src/frontend/index.jsx
+  - key: background
+    path: src/frontend/background.jsx
+  - key: assets
+    path: static/assets
+
+app:
+  id: ari:cloud:ecosystem::app/160cdb44-8676-4ca9-831e-6c382efee441
+  runtime:
+    name: nodejs22.x
+
+permissions:
+  scopes:
+    - storage:app
+    - read:jira-work
+    # Teamwork Graph connector: publish, read back and remove decision documents.
+    - write:object:jira
+    - read:object:jira
+    - delete:object:jira
