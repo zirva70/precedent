@@ -2,6 +2,73 @@
 
 Paste each block into the matching Devpost field.
 
+Before submitting, fill the three placeholders in angle brackets: `<INSTALLATION LINK>`,
+`<YOUTUBE LINK>` and `<REPOSITORY LINK>`. The MCP step in the testing instructions has
+not been run against the production install yet; run it once before submitting.
+
+## Category
+
+Apps for Software Teams
+
+## Bonus prizes
+
+Best app with Atlassian MCP · Best Agents (Rovo) · Best apps with Teamwork Graph
+integration
+
+### Best app with Atlassian MCP
+
+The MCP server is the main way into Precedent. The `rovo:mcp` module exposes five
+tools: `check-plan-against-decisions`, `record-decision`, `find-decisions`,
+`get-decisions-for-issue` and `supersede-decision`. A coding agent calls the first one
+before it starts a task and `record-decision` before it finishes.
+
+It ships with an open skill file, `skills/precedent/SKILL.md` (<REPOSITORY LINK>),
+which a team adds to any third-party agent. It tells the agent when to call each tool,
+to stop and ask a person when its plan contradicts a decision, and never to supersede
+a decision on its own.
+
+The tool descriptions are written for agents. Matching is by words, so the check tool
+asks the agent for synonyms (`keywords`) and also returns `otherActiveDecisions` for
+the agent to judge by meaning. Errors come back as a message that says which input to
+fix, not as an exception.
+
+We tested the server as an outside client would: `scripts/mcp-smoke.mjs` signs in with
+OAuth at `mcp.atlassian.com/forge/<app id>`, lists the tools, checks a plan and records
+a decision. The test suite checks nine realistic plans against thirty realistic
+decisions, and the right decision must come first for each.
+
+### Best Agents (Rovo)
+
+The `rovo:agent` module "Precedent" uses the same five Forge `action` modules. It
+answers "what did we decide about this, and why?" only from the records and quotes the
+decision id. Given a plan, it calls the check first and says, for each decision,
+whether the plan follows, extends or contradicts it. It asks for the reason when a
+decision is stated without one, and it never invents a decision.
+
+### Best apps with Teamwork Graph integration
+
+A `graph:connector` publishes every decision to Teamwork Graph as an
+`atlassian:document`, so Rovo Search and every Rovo agent on the site can find it next
+to the team's other work. When a decision is superseded or reversed, the document is
+updated in place with its new status and the id of its replacement. The panel shows
+whether each decision is in the graph, and says so plainly when the connector is off.
+
+## How the project meets the technology requirement
+
+Precedent is a Forge app (Node.js 22 runtime, `manifest.yml` with seven module types)
+built during the submission period. It integrates with Jira (work item panel,
+background script on every work item view, trigger on new comments), Rovo (an agent and
+an MCP server) and Teamwork Graph (a connector). All data is kept in Forge storage on
+the customer's site; the app calls no external service.
+
+## Installation link
+
+<INSTALLATION LINK>
+
+## Demo video
+
+<YOUTUBE LINK>
+
 ## Project name
 
 Precedent
@@ -51,6 +118,12 @@ puts them in front of agents and people at the moment they are about to start wo
 
 People stay in control: only a person reverses a decision, and an agent is told to
 stop and ask instead of working around a decision that blocks its plan.
+
+Atlassian Home projects already have a Decisions tab. It is a log that people write
+for a project and read when they think to look. Precedent works where the work starts:
+on the Jira work item, and inside the agent before it acts. It raises a warning
+without being asked, and it tracks which decisions are still in force and what
+replaced the others.
 
 ## How we built it
 
@@ -130,3 +203,11 @@ forge, atlassian, jira, rovo, mcp, teamwork-graph, javascript, node.js, react, u
    checkout caching, and why?".
 7. To see decisions in Rovo Search, connect the **Precedent** connector in Atlassian
    Administration under Rovo connectors, then search for a decision's title.
+8. To use the MCP server from an outside agent, add
+   `https://mcp.atlassian.com/forge/160cdb44-8676-4ca9-831e-6c382efee441` to any MCP
+   client that supports OAuth, and sign in as a user of the site where the app is
+   installed. For example, in Claude Code:
+   `claude mcp add --transport http precedent https://mcp.atlassian.com/forge/160cdb44-8676-4ca9-831e-6c382efee441`.
+   Ask the agent to check the plan "add a Redis cache to checkout price lookup"; it
+   returns the decision from step 3. The skill file `skills/precedent/SKILL.md`
+   (<REPOSITORY LINK>) tells an agent when to call each tool.
