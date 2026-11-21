@@ -2,9 +2,13 @@
 
 Paste each block into the matching Devpost field.
 
-Before submitting, fill the three placeholders in angle brackets: `<INSTALLATION LINK>`,
-`<YOUTUBE LINK>` and `<REPOSITORY LINK>`. The MCP step in the testing instructions has
-not been run against the production install yet; run it once before submitting.
+Before submitting, fill the two placeholders in angle brackets: `<INSTALLATION LINK>`
+(it is in `submission/install-link.local.txt`, which git ignores) and `<YOUTUBE LINK>`.
+The repository is https://github.com/zirva70/precedent.
+
+Production was tested on a clean free developer site on 21 Nov 2026: installing by link
+and testing steps 1–5 work. Steps 6–8 could not run there because Rovo is off on such
+sites; they were rehearsed on the demo site with the development build.
 
 ## Category
 
@@ -22,7 +26,7 @@ tools: `check-plan-against-decisions`, `record-decision`, `find-decisions`,
 `get-decisions-for-issue` and `supersede-decision`. A coding agent calls the first one
 before it starts a task and `record-decision` before it finishes.
 
-It ships with an open skill file, `skills/precedent/SKILL.md` (<REPOSITORY LINK>),
+It ships with an open skill file, `skills/precedent/SKILL.md` (https://github.com/zirva70/precedent/blob/main/skills/precedent/SKILL.md),
 which a team adds to any third-party agent. It tells the agent when to call each tool,
 to stop and ask a person when its plan contradicts a decision, and never to supersede
 a decision on its own.
@@ -187,7 +191,15 @@ forge, atlassian, jira, rovo, mcp, teamwork-graph, javascript, node.js, react, u
 
 ## Testing instructions for judges
 
-1. Install the app on a Jira site with the installation link.
+Steps 1–5 work on any Jira site. Steps 6–8 need a site where Rovo is on: the Rovo
+agent, the Teamwork Graph connector and the MCP server all run through Rovo. On a free
+developer site from go.atlassian.com/cloud-dev Rovo is off, so Rovo Chat is missing,
+the connector shows "Rovo is disabled on this site" and the site is not offered when an
+MCP client signs in. A Forge demo site (`forge site provision`) has Rovo. The demo video
+shows steps 6–8.
+
+1. Install the app on a Jira site with the installation link. If the site has no Jira
+   project yet, create one with any template.
 2. Optional, once, as a Jira admin: open any work item, click the apps button under
    the title, choose **Precedent**, then in the panel's `···` menu choose **Show for
    all work items**. Without this step the warning flag still works; the panel appears
@@ -196,9 +208,11 @@ forge, atlassian, jira, rovo, mcp, teamwork-graph, javascript, node.js, react, u
    the checkout flow", decision "Prices are always read live at checkout", reason
    "Stale prices caused refunds", topics "checkout, caching".
 4. Create a second work item named "Add a Redis cache to checkout price lookup" and
-   open it. A flag shows the earlier decision and its reason.
+   open it. A flag names the earlier decision; the Precedent panel on that work item
+   shows its reason.
 5. On any work item add the comment "Decision: we ship the mobile app weekly, because
-   daily releases broke review." Reload: the panel asks "Is this a decision?".
+   daily releases broke review." Reload: the panel asks "Is this a decision?". Click
+   **Yes, record it**.
 6. In Rovo Chat pick the **Precedent** agent and ask "What did we decide about
    checkout caching, and why?".
 7. To see decisions in Rovo Search, connect the **Precedent** connector in Atlassian
@@ -210,4 +224,4 @@ forge, atlassian, jira, rovo, mcp, teamwork-graph, javascript, node.js, react, u
    `claude mcp add --transport http precedent https://mcp.atlassian.com/forge/160cdb44-8676-4ca9-831e-6c382efee441`.
    Ask the agent to check the plan "add a Redis cache to checkout price lookup"; it
    returns the decision from step 3. The skill file `skills/precedent/SKILL.md`
-   (<REPOSITORY LINK>) tells an agent when to call each tool.
+   (https://github.com/zirva70/precedent/blob/main/skills/precedent/SKILL.md) tells an agent when to call each tool.

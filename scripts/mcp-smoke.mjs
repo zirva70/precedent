@@ -11,6 +11,10 @@
 //
 // writes the decisions in seed-decisions.json through record-decision and then checks
 // that plans find the right one. This creates decisions on the site.
+//
+//   node scripts/mcp-smoke.mjs --plan "add a Redis cache to checkout price lookup"
+//
+// checks that plan instead of the default one. Still read-only.
 
 import { createHash, randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -238,12 +242,21 @@ if (demoAt !== -1) {
   process.exit(0);
 }
 
+// --plan "<text>": check this plan instead of the default one, for example the plan
+// from the judges' testing instructions.
+const planAt = process.argv.indexOf('--plan');
+const PLAN =
+  planAt !== -1 && process.argv[planAt + 1]
+    ? process.argv[planAt + 1]
+    : 'Record supervisor-monitored calls and store the audio for later quality review';
+
 if (!SEED) {
-  await call('check-plan-against-decisions', {
-    plan: 'Record supervisor-monitored calls and store the audio for later quality review',
-  });
+  await call('check-plan-against-decisions', { plan: PLAN });
   await call('find-decisions', { query: 'playback buffer' });
-  await call('get-decisions-for-issue', { issueKey: 'MOBL-55' });
+  const issueAt = process.argv.indexOf('--issue');
+  await call('get-decisions-for-issue', {
+    issueKey: issueAt !== -1 && process.argv[issueAt + 1] ? process.argv[issueAt + 1] : 'MOBL-55',
+  });
   log('DONE');
   process.exit(0);
 }
