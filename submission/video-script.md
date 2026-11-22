@@ -59,6 +59,11 @@ One take, no rehearsal (to spare the Claude plan's usage limit):
   are on the demo site, the task wording above and two other phrasings all return
   DEC-P84AU5 first and DEC-ZSPUND second (21 Nov 2026, local check of Precedent's
   ranking).
+- Start Claude Code as `claude.cmd` (PowerShell blocks the `claude.ps1` wrapper on
+  this machine). Before the take, press Shift+Tab until the footer reads "accept
+  edits on": code edits then go through without prompts, while the Precedent calls and
+  the test run still ask, so the approval of `record-decision` is on tape. In auto mode
+  nothing asks.
 - Start the screen recording before typing the task, so the one run is on tape.
 - When the agent asks to run `check-plan-against-decisions`, allow it. When it asks to
   run `record-decision`, allow it: that writes the real decision to MOBL-58.
