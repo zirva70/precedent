@@ -78,6 +78,14 @@ added replay from the live buffer with tests (5 pass) and recorded **DEC-KF2SH9*
 "Recorded by an AI agent". The reply was pasted twice in that run; trim it in the edit.
 Do not run the scene again: it would record a second decision.
 
+The screen recording of that run was lost, so scene 6 is a replay built from the
+session log: `D:\MyMoney\precedent-video\scene6_agent.mp4` (37 s, 1920×1080). Its
+header says "Replay of a real coding-agent session · 22 Nov 2026 · text from the
+session log"; every line on screen is quoted from the log, with omissions marked "…",
+and it ends on a capture of the real DEC-KF2SH9 card on MOBL-58. To rebuild it, run
+`python tools\render_scene6.py frames` in `D:\MyMoney\precedent-video\scene6`, then the
+ffmpeg concat step. The voice-over above fits it as written.
+
 Fallback if the agent misbehaves on the day: the scripted client from the 10 Nov
 rehearsal, `node scripts/mcp-smoke.mjs --demo MOBL-58`, with the old voice-over: "Here
 an outside client makes the two calls a coding agent makes: it checks the plan before
