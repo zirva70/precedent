@@ -2,9 +2,10 @@
 
 Paste each block into the matching Devpost field.
 
-Before submitting, fill the two placeholders in angle brackets: `<INSTALLATION LINK>`
-(it is in `submission/install-link.local.txt`, which git ignores) and `<YOUTUBE LINK>`.
-The repository is https://github.com/zirva70/precedent.
+Before submitting, replace `<INSTALLATION LINK>` with the link in
+`submission/install-link.local.txt` (git ignores that file, so the link never reaches the
+public repository). The repository is https://github.com/zirva70/precedent. The demo
+video is public on YouTube: https://youtu.be/k4FuBCjJHtI (2:24, English subtitles).
 
 Production was tested on a clean free developer site on 21 Nov 2026: installing by link
 and testing steps 1–5 work. Steps 6–8 could not run there because Rovo is off on such
@@ -71,7 +72,7 @@ the customer's site; the app calls no external service.
 
 ## Demo video
 
-<YOUTUBE LINK>
+https://youtu.be/k4FuBCjJHtI
 
 ## Project name
 
