@@ -106,8 +106,8 @@ puts them in front of agents and people at the moment they are about to start wo
   decisions in force on that topic, with the rationale, plus the outdated ones it must
   not follow. After the work it calls `record-decision`.
 - **People are warned without asking.** When someone opens a Jira work item that
-  touches an earlier decision, a flag appears with that decision and its reason. It
-  does not depend on anyone opening a panel.
+  touches an earlier decision, a flag names that decision, and the panel shows its
+  reason. The flag does not depend on anyone opening the panel.
 - **A panel on every work item** shows what was decided there, who decided it (a
   person, an AI agent, or picked up from a comment) and whether it is still in force.
 - **Decisions are captured where they are made.** Write "Decision: ..." in a Jira
