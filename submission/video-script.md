@@ -71,6 +71,13 @@ One take, no rehearsal (to spare the Claude plan's usage limit):
   ask. If it does not, stop there, reset the repository (`git checkout .` and
   `git clean -fd`) and use the fallback below instead of a second run.
 
+Done on 22 Nov 2026, one run: the agent loaded the skill, called the check, named
+DEC-P84AU5 and stopped before writing code; after "Yes, replay from the buffer" it
+added replay from the live buffer with tests (5 pass) and recorded **DEC-KF2SH9**
+"MOBL-58 replay serves only the live in-memory buffer" on MOBL-58, shown there as
+"Recorded by an AI agent". The reply was pasted twice in that run; trim it in the edit.
+Do not run the scene again: it would record a second decision.
+
 Fallback if the agent misbehaves on the day: the scripted client from the 10 Nov
 rehearsal, `node scripts/mcp-smoke.mjs --demo MOBL-58`, with the old voice-over: "Here
 an outside client makes the two calls a coding agent makes: it checks the plan before
@@ -83,8 +90,8 @@ starting, and records what was decided at the end."
 - Scene 7 uses Rovo Search, not the default Rovo Chat. Search finds decisions on the
   demo site; the default chat does not. The third result is "[REVERSED] Decision
   DEC-K2K829: Supervisor replay reads only the in-memory buffer", left from the
-  rehearsal; after scene 6 an active decision with the same title exists, so keep the
-  third result out of the frame.
+  rehearsal; keep it out of the frame so it is not mistaken for the decision scene 6
+  recorded (DEC-KF2SH9).
 - The contest rules ask that videos avoid third-party trademarks without permission.
   In scene 6, start recording after the agent's welcome banner and keep the frame on
   the conversation.
