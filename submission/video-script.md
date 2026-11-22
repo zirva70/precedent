@@ -53,14 +53,18 @@ Once:
 3. Type `/mcp`, choose **precedent**, then **Authenticate**. In the browser, choose the
    site **one-atlas-xmys** and accept.
 
-Rehearsing:
+One take, no rehearsal (to spare the Claude plan's usage limit):
 
-- When the agent asks to run `record-decision`, answer **No**, so nothing is written to
-  MOBL-58. Then reset the repository: `git checkout .` and `git clean -fd`.
-- The agent's words change between runs. What must hold: it calls the check before
-  editing, names DEC-P84AU5, and stops to ask.
-
-Final take: approve `record-decision` once. It writes a real decision to MOBL-58.
+- The search side is checked without the agent: with DEC-P84AU5 and DEC-ZSPUND as they
+  are on the demo site, the task wording above and two other phrasings all return
+  DEC-P84AU5 first and DEC-ZSPUND second (21 Nov 2026, local check of Precedent's
+  ranking).
+- Start the screen recording before typing the task, so the one run is on tape.
+- When the agent asks to run `check-plan-against-decisions`, allow it. When it asks to
+  run `record-decision`, allow it: that writes the real decision to MOBL-58.
+- What must hold: it calls the check before editing, names DEC-P84AU5, and stops to
+  ask. If it does not, stop there, reset the repository (`git checkout .` and
+  `git clean -fd`) and use the fallback below instead of a second run.
 
 Fallback if the agent misbehaves on the day: the scripted client from the 10 Nov
 rehearsal, `node scripts/mcp-smoke.mjs --demo MOBL-58`, with the old voice-over: "Here
