@@ -24,6 +24,16 @@ agent; that version is not rehearsed yet.
 - Scene 4 leaves a comment and a decision on MOBL-36. Scene 8 reverses that decision.
 - Scene 6, once, before the first rehearsal: see "Setting up scene 6" below.
 
+## Final video (22 Nov 2026)
+
+`D:\MyMoney\precedent-video\precedent_demo.mp4`, 2:24, 1920×1080, no audio, English
+subtitles under the picture. Built by `toolsuild_video.py` from real captures of the demo
+site taken on 22 Nov 2026 with Jira switched to English (`shots\`), plus scene 6. Order:
+title, problem, MOBL-55, MOBL-58 flag, coding agent (scene 6), Rovo agent, Rovo Search,
+MOBL-36 comment capture, reversal, end card. Scenes 4 and 8 ran for real: DEC-8TCPMN was
+recorded from the comment on MOBL-36 and then reversed ("Store review is now automatic").
+YouTube title and description: `D:\MyMoney\precedent-video\youtube.txt`.
+
 ## Scenes
 
 | # | Time | On screen | Voice-over |
